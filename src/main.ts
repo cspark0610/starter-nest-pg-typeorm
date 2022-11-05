@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { fastifyHelmet } from '@fastify/helmet';
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -7,44 +6,14 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import FastifyFormidable from 'fastify-formidable';
+import { fastifyHelmet } from 'fastify-helmet';
 
 import { initSwagger } from './app.swagger';
+import { fastifyOpts } from './fastifyConfigOptions';
+import { generateReport, generateTypeormConfigFile } from './scripts';
 
 import { AppModule } from './app.module';
-
-const fastifyOpts = {
-  logger: {
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        levelFirst: true,
-        translateTime: 'SYS:dd-mm-yyyy h:MM:ss TT Z',
-        ignore: 'pid,hostname',
-        colorize: true,
-      },
-      level: 'info',
-    },
-    serializers: {
-      res(_reply) {
-        // The default
-        return {
-          statusCode: _reply.statusCode,
-          statusMessage: _reply.raw.statusMessage,
-        };
-      },
-      req(_request) {
-        return {
-          host: _request.headers.host,
-          url: _request.url,
-          path: _request.routerPath,
-          method: _request.method,
-          params: _request.params,
-          query: _request.query,
-        };
-      },
-    },
-  },
-};
 
 async function bootstrap() {
   const logger = new Logger();
@@ -63,7 +32,7 @@ async function bootstrap() {
   /* ======= SET PREFIX END_POINT ======= */
   app.setGlobalPrefix('api/v1');
 
-  /* ======= ENABLE HELMET ======= */
+  /* ======= ENABLE FASTIFY HELMET ======= */
   await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
@@ -81,17 +50,32 @@ async function bootstrap() {
     },
   });
 
+  /* ======= GENERATE TYPEORM CONFIG FILE ======= */
+  await app.register(FastifyFormidable, {
+    formidable: {
+      // max 600 mb
+      maxFileSize: 600 * 1024 * 1024,
+    },
+  });
+
   /* ======= ENABLE CORS ======= */
   app.enableCors();
+
+  /* ======= RUN SCRIPTS ======= */
+  const typeOrm = await generateTypeormConfigFile(config); // GENERATE TYPEORM CONFIG FILE
 
   /* ======= VALIDATE PIPE (USE DTOs) ======= */
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
-  /* ======= INIT SWAGGER ======= */
+  /* ======= INIT DOC SWAGGER ======= */
   if (process.env.NODE_ENV !== 'production') {
     initSwagger(app);
   }
 
+  /* ======= REPORT SCRIPTS ======= */
+  generateReport(typeOrm);
+
+  /* ======= SET PORT ======= */
   await app.listen(config.get<number>('api.port'), '0.0.0.0');
 
   if (process.env.NODE_ENV !== 'production') {
@@ -102,5 +86,4 @@ async function bootstrap() {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();
