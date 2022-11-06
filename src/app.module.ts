@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -18,9 +19,8 @@ import { AppService } from './app.service';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      // eslint-disable-next-line arrow-body-style
       useFactory: (config: ConfigService) => {
-        return config.get<TypeOrmModuleOptions>('database') as string;
+        return config.get<Partial<TypeOrmModuleOptions>>('database');
       },
     }),
   ],
