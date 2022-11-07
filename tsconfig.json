@@ -18,7 +18,22 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["src/*"],
+      "~m/*": ["src/modules/*"],
+      "~configuration": ["src/common/configuration"],
+      // "~constants": ["src/common/constants"],
+      // "~decorators": ["src/common/decorators"],
+      // "~dtos": ["src/common/dtos"],
+      "~entities": ["src/common/entities"],
+      "~helpers": ["src/common/helpers"],
+      // "~interfaces": ["src/common/interfaces"],
+      // "~providers": ["src/common/providers"],
+      "~mail": ["src/common/mail"],
+      "~repositories": ["src/common/repositories"],
+      "~scripts": ["src/scripts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
