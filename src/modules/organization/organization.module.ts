@@ -10,8 +10,8 @@ import { OrganizationService } from './organization.service';
 import { Organization } from './entities/organization.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Organization, OrganizationRepository])],
+  imports: [TypeOrmModule.forFeature([Organization])],
   controllers: [OrganizationController],
-  providers: [OrganizationService],
+  providers: [OrganizationService, OrganizationRepository],
 })
 export class OrganizationModule {}
