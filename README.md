@@ -1,4 +1,4 @@
-# SmartCoreAPIv2
+# API-Tenant-v1
 
 ## Requirements
 
