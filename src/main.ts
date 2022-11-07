@@ -65,7 +65,7 @@ async function bootstrap() {
   const typeOrm = await generateTypeormConfigFile(config); // GENERATE TYPEORM CONFIG FILE
 
   /* ======= VALIDATE PIPE (USE DTOs) ======= */
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   /* ======= INIT DOC SWAGGER ======= */
   if (process.env.NODE_ENV !== 'production') {

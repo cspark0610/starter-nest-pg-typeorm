@@ -32,6 +32,7 @@
       // "~providers": ["src/common/providers"],
       "~mail": ["src/common/mail"],
       "~repositories": ["src/common/repositories"],
+      "~utils": ["src/common/utils"],
       "~scripts": ["src/scripts"]
     }
   },

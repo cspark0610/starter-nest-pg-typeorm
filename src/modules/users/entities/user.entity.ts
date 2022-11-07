@@ -26,7 +26,7 @@ export class User extends DateEntity(EmptyClass) {
   lastName: string;
 
   @Column({ type: 'varchar', nullable: true })
-  phone: string;
+  phone?: string;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
@@ -36,7 +36,9 @@ export class User extends DateEntity(EmptyClass) {
   password: string;
 
   /* ======= RELATIONS ======= */
-  @OneToOne(() => Organization, (org) => org.user)
+  @OneToOne(() => Organization, (org) => org.user, {
+    cascade: ['insert', 'remove'],
+  })
   organization: Organization;
 
   /* ========= HOOKS ========= */
