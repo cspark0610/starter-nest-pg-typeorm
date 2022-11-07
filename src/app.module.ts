@@ -5,9 +5,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { configSchema, configurations } from './common/configuration';
 
-import { AppController } from './app.controller';
-
-import { AppService } from './app.service';
+import { OrganizationModule } from './modules/organization/organization.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -23,8 +22,10 @@ import { AppService } from './app.service';
         return config.get<Partial<TypeOrmModuleOptions>>('database');
       },
     }),
+    UsersModule,
+    OrganizationModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
