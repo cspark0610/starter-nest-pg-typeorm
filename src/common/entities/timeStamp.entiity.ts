@@ -8,7 +8,7 @@ export function DateEntity<TBase extends Constructor>(Base: TBase) {
     @CreateDateColumn({ name: 'created_at', type: 'timestamp', select: false })
     created: Date;
 
-    @UpdateDateColumn({ name: 'created_at', type: 'timestamp', select: false })
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', select: false })
     updated: Date;
   }
   return TimeStampBase;
