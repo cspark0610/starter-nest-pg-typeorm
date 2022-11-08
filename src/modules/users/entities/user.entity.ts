@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { genSaltSync, hashSync } from 'bcrypt';
-import { Exclude } from 'class-transformer';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -31,13 +30,12 @@ export class User extends DateEntity(EmptyClass) {
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
 
-  @Column({ type: 'varchar', nullable: false })
-  @Exclude()
+  @Column({ type: 'varchar', nullable: false, select: false })
   password: string;
 
   /* ======= RELATIONS ======= */
   @OneToOne(() => Organization, (org) => org.user, {
-    cascade: ['insert', 'remove'],
+    cascade: ['insert', 'remove', 'update'],
   })
   organization: Organization;
 
