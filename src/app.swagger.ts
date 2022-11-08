@@ -4,6 +4,7 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import * as fs from 'fs';
 
 export const initSwagger = (app: INestApplication) => {
   const swaggerConfig = new DocumentBuilder()
@@ -13,6 +14,7 @@ export const initSwagger = (app: INestApplication) => {
     .setVersion('0.0.1')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+
   SwaggerModule.setup('/api/docs', app, document, {
     uiConfig: {
       deepLinking: true,
@@ -31,4 +33,5 @@ export const initSwagger = (app: INestApplication) => {
     },
     staticCSP: true,
   } as SwaggerCustomOptions);
+  fs.writeFileSync('./swagger-spec.json', JSON.stringify(document, null, 2));
 };

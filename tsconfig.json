@@ -23,15 +23,9 @@
       "~/*": ["src/*"],
       "~m/*": ["src/modules/*"],
       "~configuration": ["src/common/configuration"],
-      // "~constants": ["src/common/constants"],
-      // "~decorators": ["src/common/decorators"],
-      // "~dtos": ["src/common/dtos"],
       "~entities": ["src/common/entities"],
       "~helpers": ["src/common/helpers"],
-      // "~interfaces": ["src/common/interfaces"],
-      // "~providers": ["src/common/providers"],
       "~mail": ["src/common/mail"],
-      "~repositories": ["src/common/repositories"],
       "~utils": ["src/common/utils"],
       "~scripts": ["src/scripts"]
     }

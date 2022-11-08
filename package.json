@@ -28,6 +28,7 @@
     "@nestjs/config": "^1.1.6",
     "@nestjs/core": "^8.2.6",
     "@nestjs/jwt": "^8.0.0",
+    "@nestjs/mapped-types": "^1.2.0",
     "@nestjs/platform-fastify": "8.2.6",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "^8.0.3",
@@ -46,7 +47,8 @@
     "pino-pretty": "^9.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.6",
-    "typeorm": "0.2.41"
+    "typeorm": "0.2.41",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.2.5",
@@ -63,6 +65,7 @@
     "@types/prettier": "^2.7.1",
     "@types/rimraf": "^3.0.2",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "eslint": "^8.26.0",
