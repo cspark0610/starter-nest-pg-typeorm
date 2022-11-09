@@ -4,7 +4,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { configSchema, configurations } from './common/configuration';
+import { SERVICES } from './modules/emails/config';
 
+import { EmailsModule } from './modules/emails/emails.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -24,6 +26,14 @@ import { UsersModule } from './modules/users/users.module';
     }),
     UsersModule,
     OrganizationModule,
+    EmailsModule.register({
+      host: process.env.MAIL_HOST,
+      port: Number(process.env.MAIL_PORT),
+      from: process.env.MAIL_USER,
+      password: process.env.MAIL_PASSWORD,
+      service: process.env.MAIL_SERVICE as SERVICES,
+      cc: process.env.MAIL_CC,
+    }),
   ],
   controllers: [],
   providers: [],

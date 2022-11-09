@@ -3,6 +3,7 @@ import { v4 } from 'uuid';
 
 import { UsersRepository } from './users.repository';
 
+import { EmailsService } from '../emails/emails.service';
 import { OrganizationService } from '../organization/organization.service';
 
 import { User } from './entities/user.entity';
@@ -12,23 +13,32 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
+  default_receiver = 'devsmartcore@outlook.com';
+
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly organizationService: OrganizationService,
+    private readonly emailsService: EmailsService,
   ) {}
 
   async create(userDto: UserDto) {
     await this.validateIfEmailsExists(userDto.email);
     await this.validateSubdomain(userDto.organization.subdomain);
 
-    const user = {
+    const body = {
       ...userDto,
       organization: {
         ...userDto.organization,
         aws_s3_bucket: v4(),
       },
     };
-    return this.usersRepository.createSingle(user as Partial<User>);
+    const user = await this.usersRepository.createSingle(body as Partial<User>);
+    if (user) {
+      const receivers = [{ email: this.default_receiver }];
+      await this.emailsService.sendEmail(receivers, user);
+    }
+
+    return user;
   }
 
   findAll() {

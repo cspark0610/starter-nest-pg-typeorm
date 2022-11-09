@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import {
   Body,
   Controller,
@@ -6,9 +7,11 @@ import {
   Param,
   Patch,
   Post,
+  Res,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import fastify = require('fastify');
 import { defaultUser } from '~/common/constants';
 
 import { UsersService } from './users.service';
@@ -22,9 +25,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/register')
-  @ApiOperation({ description: 'Crea un usuario tenant' })
+  @ApiOperation({
+    description: 'Crea un usuario tenant y le envia un correo de bienvenida',
+  })
   @ApiBody({
-    description: 'crea un usuario tenant usando un userDto',
+    description: 'Crea un usuario tenant usando un userDto',
     type: UserDto,
     examples: {
       ejemplo1: {
@@ -32,13 +37,20 @@ export class UsersController {
       },
     },
   })
-  @ApiResponse({ status: 201, description: 'usuario creado correctamente' })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuario creado correctamente y correo enviado',
+  })
   @ApiResponse({
     status: 409,
-    description: 'Email del user ya existe, <br/> El rol no existe',
+    description: 'Email del user o el subdomiino a registar ya existe',
   })
-  create(@Body() userDto: UserDto) {
-    return this.usersService.create(userDto);
+  async create(@Body() userDto: UserDto, @Res() res: fastify.FastifyReply) {
+    const data = await this.usersService.create(userDto);
+    res.status(201).send({
+      message: 'User tenant has been successfully created and sent email',
+      data,
+    });
   }
 
   @Get()
