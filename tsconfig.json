@@ -25,7 +25,6 @@
       "~configuration": ["src/common/configuration"],
       "~entities": ["src/common/entities"],
       "~helpers": ["src/common/helpers"],
-      "~mail": ["src/common/mail"],
       "~utils": ["src/common/utils"],
       "~scripts": ["src/scripts"]
     }

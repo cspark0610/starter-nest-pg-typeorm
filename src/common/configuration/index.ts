@@ -1,4 +1,3 @@
-import type { JwtModuleOptions } from '@nestjs/jwt';
 import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import Joi from 'joi';
@@ -14,13 +13,13 @@ export const configSchema = Joi.object({
   DB_USER: Joi.string().required(),
   DB_PASS: Joi.string().required(),
   DB_NAME: Joi.string().required(),
-  JWT_SECRET: Joi.string().required(),
-  JWT_EXPIRES_IN: Joi.string(),
-  MAIL_HOST: Joi.string().required(), // host
-  MAIL_PORT: Joi.string().required(), // host
+  MAIL_HOST: Joi.string(), // host
+  MAIL_PORT: Joi.string(), // host
   MAIL_SECURE: Joi.string().required(), // host
   MAIL_USER: Joi.string().required(), // host
-  MAIL_PASS: Joi.string().required(), // host
+  MAIL_PASSWORD: Joi.string().required(), // host
+  MAIL_SERVICE: Joi.string().required(), // host
+  MAIL_CC: Joi.string(), // host
   DEFAULT_USER_EMAIL: Joi.string().email(),
   DEFAULT_USER_PASSWORD: Joi.string().min(8).max(256),
 });
@@ -55,34 +54,18 @@ export const configurations = () => ({
     logging: process.env.NODE_ENV === 'development',
     logger: 'file',
   } as TypeOrmModuleOptions,
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '7d' },
-  } as JwtModuleOptions,
+
+  // EmailsModule
   mail: {
-    host: process.env.MAIL_HOST,
+    host: process.env.MAIL_HOST || '',
     port: parseInt(process.env.MAIL_PORT, 10) || 25,
     secure: toBoolean(process.env.MAIL_SECURE),
+    cc: process.env.MAIL_CC,
     auth: {
       user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
+      pass: process.env.MAIL_PASSWORD,
     },
   },
-  // TODO: modificarlo de acuerdo a la nueva tabla
-  // defaultUser: {
-  //   name: 'admin',
-  //   lastName: 'admin',
-  //   phone: 'admin',
-  //   username: 'admin',
-  //   email: process.env.DEFAULT_USER_EMAIL || 'admin@smartcore.pe',
-  //   password: process.env.DEFAULT_USER_PASSWORD || 'password#123@',
-  //   state: 'active',
-  //   photo: 'admin',
-  //   address: 'admin',
-  //   language: 'ES(Español)',
-  //   mode: false,
-  //   roleId: 1,
-  // },
   url: {
     base: process.env.BASE_URL || 'http://localhost:4000',
   },

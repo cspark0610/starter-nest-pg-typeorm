@@ -5,11 +5,11 @@
       "post": {
         "operationId": "UsersController_create",
         "summary": "",
-        "description": "Crea un usuario tenant",
+        "description": "Crea un usuario tenant y le envia un correo de bienvenida",
         "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "crea un usuario tenant usando un userDto",
+          "description": "Crea un usuario tenant usando un userDto",
           "content": {
             "application/json": {
               "schema": {
@@ -34,10 +34,10 @@
         },
         "responses": {
           "201": {
-            "description": "usuario creado correctamente"
+            "description": "Usuario creado correctamente y correo enviado"
           },
           "409": {
-            "description": "Email del user ya existe, <br/> El rol no existe"
+            "description": "Email del user o el subdomiino a registar ya existe"
           }
         },
         "tags": [
