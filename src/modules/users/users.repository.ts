@@ -22,12 +22,12 @@ export class UsersRepository {
   }
 
   findOneById(id: number): Promise<User> {
-    return this.repository.findOne({ id });
+    return this.repository.findOneBy({ id });
   }
 
   findOneBy(where: Partial<User> = {}): Promise<User> {
     const { email } = where;
-    return this.repository.findOne({ email });
+    return this.repository.findOneBy({ email });
   }
 
   async createSingle(data: Partial<User>): Promise<User> {

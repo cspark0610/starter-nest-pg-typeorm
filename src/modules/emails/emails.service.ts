@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable no-console */
-import { Inject, Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { type Transporter, createTransport, SendMailOptions } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 import { EmailConfig } from './config';
@@ -10,12 +9,14 @@ import { User } from '../users/entities/user.entity';
 
 import { ReceiverDto } from './dto/receiver.dto';
 
+const logger = new Logger();
+
 @Injectable()
 export class EmailsService {
-  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
   constructor(@Inject('CONFIG_OPTIONS') private options: EmailConfig) {
-    this.transporter = nodemailer.createTransport({
+    this.transporter = createTransport({
       // host: process.env.MAIL_HOST,
       // port: process.env.MAIL_PORT,
       service: process.env.MAIL_SERVICE,
@@ -42,14 +43,19 @@ export class EmailsService {
         html: `<b>No Reply SmartCore </b><br> New organization data: ${JSON.stringify(
           data,
         )}<br />`,
-      };
-      const result: SMTPTransport.SentMessageInfo =
-        await this.transporter.sendMail(mailOptions);
+        template: `${process.cwd()}/templates/welcome`,
+      } as SendMailOptions;
+      const result: SMTPTransport.SentMessageInfo = await this.transporter
+        .sendMail(mailOptions)
+        .then((info) => info);
 
       if (result.messageId)
-        console.log(`email sent successfully to ${to.join(', ')}`);
+        logger.debug(
+          `Email sent successfully to ${to.join(', ')}`,
+          'NodeMailer',
+        );
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 }

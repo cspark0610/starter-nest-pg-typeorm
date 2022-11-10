@@ -21,6 +21,6 @@ export class OrganizationRepository {
 
   findOneBy(where: Partial<Organization> = {}): Promise<Organization> {
     const { subdomain } = where;
-    return this.repository.findOne({ subdomain });
+    return this.repository.findOneBy({ subdomain });
   }
 }

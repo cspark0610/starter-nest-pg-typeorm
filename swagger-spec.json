@@ -48,10 +48,22 @@
     "/api/v1/users": {
       "get": {
         "operationId": "UsersController_findAll",
+        "summary": "",
+        "description": "",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -62,6 +74,8 @@
     "/api/v1/users/{id}": {
       "get": {
         "operationId": "UsersController_findOne",
+        "summary": "",
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -74,7 +88,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -83,6 +104,8 @@
       },
       "patch": {
         "operationId": "UsersController_update",
+        "summary": "",
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -114,6 +137,8 @@
       },
       "delete": {
         "operationId": "UsersController_remove",
+        "summary": "",
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -126,7 +151,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -202,6 +234,73 @@
           "email",
           "password",
           "phone"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "organization": {
+            "description": "======= RELATIONS =======",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Organization"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lastName",
+          "email",
+          "password",
+          "organization"
+        ]
+      },
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "subdomain": {
+            "type": "string"
+          },
+          "aws_s3_bucket": {
+            "type": "string"
+          },
+          "user": {
+            "description": "======= RELATIONS =======",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "subdomain",
+          "aws_s3_bucket",
+          "user"
         ]
       },
       "UpdateUserDto": {
