@@ -1,10 +1,13 @@
-/* eslint-disable arrow-body-style */
+import type SMTPConnection from 'nodemailer/lib/smtp-connection';
+
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 
 import { configSchema, configurations } from './common/configuration';
-import { SERVICES } from './modules/emails/config';
 
 import { EmailsModule } from './modules/emails/emails.module';
 import { OrganizationModule } from './modules/organization/organization.module';
@@ -20,19 +23,36 @@ import { UsersModule } from './modules/users/users.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return config.get<Partial<TypeOrmModuleOptions>>('database');
-      },
+      useFactory: (config: ConfigService) =>
+        config.get<Partial<TypeOrmModuleOptions>>('database'),
     }),
     UsersModule,
     OrganizationModule,
-    EmailsModule.register({
-      host: process.env.MAIL_HOST,
-      port: Number(process.env.MAIL_PORT),
-      from: process.env.MAIL_USER,
-      password: process.env.MAIL_PASSWORD,
-      service: process.env.MAIL_SERVICE as SERVICES,
-      cc: process.env.MAIL_CC,
+    EmailsModule,
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        transport: config.get<SMTPConnection.Options>('mail'),
+        defaults: {
+          from: '"no-reply" <devsmartcore@outlook.com>',
+        },
+        template: {
+          dir: join(__dirname, '../templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+        options: {
+          partials: {
+            dir: join(__dirname, '../templates/partials'),
+            options: {
+              strict: true,
+            },
+          },
+        },
+        preview: true,
+      }),
     }),
   ],
   controllers: [],

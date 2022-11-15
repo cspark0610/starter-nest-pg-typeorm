@@ -1,4 +1,5 @@
 import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import type SMTPConnection from 'nodemailer/lib/smtp-connection';
 
 import Joi from 'joi';
 import { join } from 'path';
@@ -13,15 +14,12 @@ export const configSchema = Joi.object({
   DB_USER: Joi.string().required(),
   DB_PASS: Joi.string().required(),
   DB_NAME: Joi.string().required(),
-  MAIL_HOST: Joi.string(), // host
-  MAIL_PORT: Joi.string(), // host
-  MAIL_SECURE: Joi.string().required(), // host
-  MAIL_USER: Joi.string().required(), // host
-  MAIL_PASSWORD: Joi.string().required(), // host
-  MAIL_SERVICE: Joi.string().required(), // host
-  MAIL_CC: Joi.string(), // host
-  DEFAULT_USER_EMAIL: Joi.string().email(),
-  DEFAULT_USER_PASSWORD: Joi.string().min(8).max(256),
+  MAIL_HOST: Joi.string().required(),
+  MAIL_PORT: Joi.string().required(),
+  MAIL_SECURE: Joi.string().required(),
+  MAIL_USER: Joi.string().required(),
+  MAIL_PASSWORD: Joi.string().required(),
+  MAIL_LOGGER: Joi.string().default(false),
 });
 
 export const configurations = () => ({
@@ -57,20 +55,14 @@ export const configurations = () => ({
 
   // EmailsModule
   mail: {
-    host: process.env.MAIL_HOST || '',
-    port: parseInt(process.env.MAIL_PORT, 10) || 25,
-    secure: toBoolean(process.env.MAIL_SECURE),
-    cc: process.env.MAIL_CC,
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT || 25,
+    // upgrade later with STARTTLS
+    secure: toBoolean(process.env.MAIL_SECURE) || false,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASSWORD,
     },
-  },
-  url: {
-    base: process.env.BASE_URL || 'http://localhost:4000',
-  },
-  basic: {
-    username: process.env.BASIC_USERNAME,
-    password: process.env.BASIC_PASSWORD,
-  },
+    logger: toBoolean(process.env.MAIL_LOGGER) || false,
+  } as SMTPConnection.Options,
 });

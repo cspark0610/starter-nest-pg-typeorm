@@ -35,7 +35,13 @@ export class UsersService {
     const user = await this.usersRepository.createSingle(body as Partial<User>);
     if (user) {
       const receivers = [{ email: this.default_receiver }];
-      await this.emailsService.sendEmail(receivers, user);
+      await this.emailsService.sendEmail(receivers, {
+        name: user.name,
+        lastName: user.lastName,
+        phone: user.phone,
+        email: user.email,
+        organization: user.organization,
+      });
     }
 
     return user;

@@ -7,11 +7,10 @@
       <tr>
         <td class="content-cell">
           <div class="f-fallback">
-            <h1>Welcome, {{name}}!</h1>
+            <h1>Welcome!</h1>
             <p>
-              Thanks for trying [Product Name]. We’re thrilled to
-              have you on board. To get the most out of [Product
-              Name], do this primary next step:
+              Gracias por probar SmartCore, estamos encantados de
+              tenerte a bordo. Para comenzar, necesitamos que verifiques tu dirección de correo electrónico:
             </p>
             <!-- Action -->
             <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -30,7 +29,17 @@
                 </td>
               </tr>
             </table>
-            <p>For reference, here's your login information:</p>
+            <p>Datos registrados para nueva instancia:</p>
+            <p><strong>Nombre:</strong> <br>{{name}}</p>
+            <p><strong>Apellido:</strong> <br>{{lastName}}</p>
+            <p><strong>Celular:</strong> <br>{{phone}}</p>
+            <p><strong>Correo:</strong> <br>{{email}}</p>
+            <p><strong>Organizacion:</strong></p> <br>
+            <div style="margin-bottom: 8px;">
+              <p>subdomino: {{organization.subdomain}}</p> <br>
+              <p>aws_s3_bucket: {{organization.aws_s3_bucket}}</p> <br>
+            </div>
+
             <table class="attributes" width="100%" cellpadding="0" cellspacing="0" role="presentation">
               <tr>
                 <td class="attributes_content">
@@ -59,9 +68,9 @@
               <tr>
                 <td>
                   <p class="f-fallback sub">
-                    If you’re having trouble with the button above,
-                    copy and paste the URL below into your web
-                    browser.
+                    Si tiene problemas con el botón de arriba,
+                    copia y pega la siguiente URL en tu web
+                    navegador.
                   </p>
                   <!-- <p class="f-fallback sub"><%= name %></p> -->
                 </td>
