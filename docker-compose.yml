@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  tenant-pg:
+    container_name: tenant_pg
+    image: postgres:14.2-alpine
+    restart: unless-stopped
+    env_file:
+      - ${PWD}/.env.production
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - '5441:5432'
+    networks:
+      - default
+
+  tenant-api:
+    container_name: tenant_api
+    depends_on:
+      - tenant-pg
+    image: tenant/api:v${VERSION}
+    restart: unless-stopped
+    env_file:
+      - ${PWD}/.env.production
+    ports:
+      - '3000:3000'
+    networks:
+      - default
+
+networks:
+  default:
+    name: tenant-net

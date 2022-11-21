@@ -1,0 +1,26 @@
+# https://taskfile.dev
+
+version: '3'
+
+output: prefixed
+
+vars:
+  VERSION: $(awk '/version/{gsub(/("|",)/,"",$2);print $2};' package.json)
+
+tasks:
+  run:
+    deps: [build]
+    cmds:
+      - VERSION={{.VERSION}} docker-compose up -d
+
+  build:
+    cmds:
+      - docker build -t tenant/api:v{{.VERSION}} .
+
+  logs:
+    cmds:
+      - docker-compose logs -f
+
+  clean:
+    cmds:
+      - docker-compose down --rmi all --volumes
