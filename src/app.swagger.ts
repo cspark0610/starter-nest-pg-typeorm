@@ -15,7 +15,7 @@ export const initSwagger = (app: INestApplication) => {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-  SwaggerModule.setup('/api/docs', app, document, {
+  SwaggerModule.setup('/api/v1/docs', app, document, {
     swaggerOptions: {
       deepLinking: true,
       displayOperationId: true,
