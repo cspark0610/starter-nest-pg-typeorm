@@ -1,13 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+/* eslint-disable consistent-return */
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
-import { ReceiverDto } from './dto/receiver.dto';
+import { IEmailResponse } from './interfaces';
 
-const logger = new Logger();
+import { ReceiverDto } from './dto/receiver.dto';
 
 @Injectable()
 export class EmailsService {
+  default_receiver = 'devsmartcore@outlook.com';
+
   constructor(private readonly mailerService: MailerService) {}
 
   /**
@@ -18,28 +21,27 @@ export class EmailsService {
     context: {
       [name: string]: any;
     },
-  ) {
+    template: string,
+  ): Promise<IEmailResponse> {
     try {
       const to: string[] = receivers.map((item) => item.email);
 
       const mailOptions = {
-        from: 'devsmartcore@outlook.com',
         to,
         subject: 'Smartcore new organization registry',
-        cc: 'giuseppecv56@gmail.com',
-        template: `${process.cwd()}/templates/welcome`,
+        template: `${process.cwd()}/templates/${template}`,
         context,
       } as ISendMailOptions;
       const result: SMTPTransport.SentMessageInfo =
         await this.mailerService.sendMail(mailOptions);
 
       if (result.messageId)
-        logger.debug(
-          `Email sent successfully to ${to.join(', ')}`,
-          'NodeMailer',
-        );
+        return {
+          success: true,
+          message: `Email sent successfully to ${to.join(', ')}`,
+        };
     } catch (error) {
-      logger.error(error);
+      throw new InternalServerErrorException(JSON.stringify(error));
     }
   }
 }

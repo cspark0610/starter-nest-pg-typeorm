@@ -34,10 +34,10 @@
         },
         "responses": {
           "201": {
-            "description": "Usuario creado correctamente y correo enviado"
+            "description": "Emails sent to {email} and devsmartcore@outlook.com and user tenant created successfully"
           },
           "409": {
-            "description": "Email del user o el subdomiino a registar ya existe"
+            "description": "Email del user o el subdominio a registar ya existe"
           }
         },
         "tags": [
@@ -49,21 +49,11 @@
       "get": {
         "operationId": "UsersController_findAll",
         "summary": "",
-        "description": "",
+        "description": "Trae todos los usuarios tenant",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
-                  }
-                }
-              }
-            }
+            "description": "Users found successfully"
           }
         },
         "tags": [
@@ -75,12 +65,13 @@
       "get": {
         "operationId": "UsersController_findOne",
         "summary": "",
-        "description": "",
+        "description": "Trae un usuario tenant pasando su id",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "Pasar el id del usuario tenant a buscar",
             "schema": {
               "type": "string"
             }
@@ -88,14 +79,10 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
+            "description": "User with id: {id} found successfully"
+          },
+          "409": {
+            "description": "User with id: {id} not found"
           }
         },
         "tags": [
@@ -138,12 +125,13 @@
       "delete": {
         "operationId": "UsersController_remove",
         "summary": "",
-        "description": "",
+        "description": "Elimina un usuario tenant y su organizacion pasando el id de usuario",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "Pasar el id del usuario tenant a eliminar",
             "schema": {
               "type": "string"
             }
@@ -151,14 +139,10 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "number"
-                }
-              }
-            }
+            "description": "User with id: {id}, and organization with id: {id} removed successfully"
+          },
+          "409": {
+            "description": "User with id: {id} not found"
           }
         },
         "tags": [
@@ -234,73 +218,6 @@
           "email",
           "password",
           "phone"
-        ]
-      },
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "organization": {
-            "description": "======= RELATIONS =======",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Organization"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "lastName",
-          "email",
-          "password",
-          "organization"
-        ]
-      },
-      "Organization": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "subdomain": {
-            "type": "string"
-          },
-          "aws_s3_bucket": {
-            "type": "string"
-          },
-          "user": {
-            "description": "======= RELATIONS =======",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/User"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "subdomain",
-          "aws_s3_bucket",
-          "user"
         ]
       },
       "UpdateUserDto": {

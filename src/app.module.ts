@@ -34,7 +34,7 @@ import { UsersModule } from './modules/users/users.module';
       useFactory: (config: ConfigService) => ({
         transport: config.get<SMTPConnection.Options>('mail'),
         defaults: {
-          from: '"no-reply" <devsmartcore@outlook.com>',
+          from: '"no-reply" <support@smartcore.pe>',
         },
         template: {
           dir: join(__dirname, '../templates'),

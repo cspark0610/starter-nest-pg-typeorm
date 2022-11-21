@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 
+import async = require('async');
+import { OrganizationRepository } from '../organization/organization.repository';
+
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -9,6 +12,7 @@ export class UsersRepository {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
+    private readonly organizationRepository: OrganizationRepository,
   ) {}
 
   getQueryBuilder(): SelectQueryBuilder<User> {
@@ -22,7 +26,7 @@ export class UsersRepository {
   }
 
   findOneById(id: number): Promise<User> {
-    return this.repository.findOneBy({ id });
+    return this.getQueryBuilder().where('user.id =:id', { id }).getOne();
   }
 
   findOneBy(where: Partial<User> = {}): Promise<User> {
@@ -47,5 +51,13 @@ export class UsersRepository {
   async deleteSingle(id: number | Array<number>): Promise<number> {
     const result = await this.repository.delete(id);
     return result.affected;
+  }
+
+  deleteUserAndOrganization(id: number): void {
+    const promisesFuncArray = [
+      async () => this.organizationRepository.deleteSingle(id),
+      async () => this.deleteSingle(id),
+    ];
+    async.parallel(promisesFuncArray);
   }
 }

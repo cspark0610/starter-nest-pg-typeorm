@@ -23,4 +23,9 @@ export class OrganizationRepository {
     const { subdomain } = where;
     return this.repository.findOneBy({ subdomain });
   }
+
+  async deleteSingle(id: number | Array<number>): Promise<number> {
+    const result = await this.repository.delete(id);
+    return result.affected;
+  }
 }
