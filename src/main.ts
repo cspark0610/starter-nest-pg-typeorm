@@ -74,7 +74,7 @@ async function bootstrap() {
   /* ======= DOCS GENERATE ======= */
   if (process.env.NODE_ENV !== 'production') {
     logger.debug(
-      `Swagger document generated ${await app.getUrl()}/api/docs`,
+      `Swagger document generated ${await app.getUrl()}/api/v1/docs`,
       'Swagger',
     );
   }
