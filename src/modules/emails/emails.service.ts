@@ -1,11 +1,12 @@
 /* eslint-disable consistent-return */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
+import { AdminPayload, ClientPayload } from '../users/payloads';
+import { EmailTemplate, To } from './enum';
 import { IEmailResponse } from './interfaces';
-
-import { ReceiverDto } from './dto/receiver.dto';
 
 @Injectable()
 export class EmailsService {
@@ -17,15 +18,13 @@ export class EmailsService {
    * SMTP provider service
    */
   async sendEmail(
-    receivers: ReceiverDto[],
+    to: string[],
     context: {
       [name: string]: any;
     },
     template: string,
   ): Promise<IEmailResponse> {
     try {
-      const to: string[] = receivers.map((item) => item.email);
-
       const mailOptions = {
         to,
         subject: 'Smartcore new organization registry',
@@ -43,5 +42,17 @@ export class EmailsService {
     } catch (error) {
       throw new InternalServerErrorException(JSON.stringify(error));
     }
+  }
+
+  @OnEvent(To.ADMIN)
+  async handleEmailToAdmin(payload: AdminPayload) {
+    const toAdmin = [this.default_receiver];
+    return this.sendEmail(toAdmin, payload, EmailTemplate.REGISTER);
+  }
+
+  @OnEvent(To.CLIENT)
+  async handleEmailToClient(payload: ClientPayload) {
+    const toClient = [payload.email];
+    return this.sendEmail(toClient, payload, EmailTemplate.WELCOME);
   }
 }
