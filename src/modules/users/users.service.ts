@@ -1,26 +1,28 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { v4 } from 'uuid';
 
-import async = require('async');
+import { To } from '../emails/enum';
+import { AdminPayload, ClientPayload } from './payloads';
 import { UsersRepository } from './users.repository';
 
-import { EmailsService } from '../emails/emails.service';
 import { OrganizationService } from '../organization/organization.service';
 
 import { User } from './entities/user.entity';
 
-import { ReceiverDto } from '../emails/dto/receiver.dto';
 import { UserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  default_receiver = 'devsmartcore@outlook.com';
-
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly organizationService: OrganizationService,
-    private readonly emailsService: EmailsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(userDto: UserDto) {
@@ -35,13 +37,11 @@ export class UsersService {
       },
     };
     const user = await this.usersRepository.createSingle(body as Partial<User>);
-    const adminReceivers = [{ email: this.default_receiver }];
-    const clientReceivers = [{ email: user.email }];
     if (user) {
-      this.sendEmails(clientReceivers, adminReceivers, user);
+      this.emitEmailEvents(user);
       return {
         user,
-        message: `Emails sent to ${user.email} and ${this.default_receiver} and user tenant created successfully`,
+        message: `Emails sent to ${user.email} and smartcore admin and user tenant created successfully`,
       };
     }
     return {
@@ -90,40 +90,33 @@ export class UsersService {
   }
 
   /* ========= HELPERS ========= */
-  private sendEmails(
-    clientsReceivers: ReceiverDto[],
-    adminReceivers: ReceiverDto[],
-    user: User,
-  ) {
-    const promisesFuncArray = [
-      async () =>
-        this.emailsService.sendEmail(
-          adminReceivers,
-          {
-            name: user.name,
-            lastName: user.lastName,
-            phone: user.phone,
-            email: user.email,
-            organization: user.organization,
-            subdomain: user.organization.subdomain,
-            aws_s3_bucket: user.organization.aws_s3_bucket,
-          },
-          'register',
+  private emitEmailEvents(user: User) {
+    try {
+      this.eventEmitter.emit(
+        To.ADMIN,
+        new AdminPayload(
+          user.name,
+          user.lastName,
+          user.phone,
+          user.email,
+          user.organization,
+          user.organization.subdomain,
+          user.organization.aws_s3_bucket,
         ),
-      async () =>
-        this.emailsService.sendEmail(
-          clientsReceivers,
-          {
-            name: user.name,
-            lastName: user.lastName,
-            phone: user.phone,
-            email: user.email,
-            organization: user.organization,
-          },
-          'welcome',
-        ),
-    ];
+      );
 
-    async.parallel(promisesFuncArray);
+      this.eventEmitter.emit(
+        To.CLIENT,
+        new ClientPayload(
+          user.name,
+          user.lastName,
+          user.phone,
+          user.email,
+          user.organization,
+        ),
+      );
+    } catch (e) {
+      throw new InternalServerErrorException(JSON.stringify(e));
+    }
   }
 }
