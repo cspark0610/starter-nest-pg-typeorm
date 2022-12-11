@@ -1,55 +1,58 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable no-console */
-import { Inject, Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+/* eslint-disable consistent-return */
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
-import { EmailConfig } from './config';
-
-import { User } from '../users/entities/user.entity';
-
-import { ReceiverDto } from './dto/receiver.dto';
+import { AdminPayload, ClientPayload } from '../users/payloads';
+import { EmailTemplate, To } from './enum';
+import { IEmailResponse } from './interfaces';
 
 @Injectable()
 export class EmailsService {
-  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  default_receiver = 'devsmartcore@outlook.com';
 
-  constructor(@Inject('CONFIG_OPTIONS') private options: EmailConfig) {
-    this.transporter = nodemailer.createTransport({
-      // host: process.env.MAIL_HOST,
-      // port: process.env.MAIL_PORT,
-      service: process.env.MAIL_SERVICE,
-      // secure: process.env.MAIL_SECURE,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASSWORD,
-      },
-      logger: true,
-    });
-  }
+  constructor(private readonly mailerService: MailerService) {}
 
   /**
-   * GMAIL provider service
+   * SMTP provider service
    */
-  async sendEmail(receivers: ReceiverDto[], data: User) {
+  async sendEmail(
+    to: string[],
+    context: {
+      [name: string]: any;
+    },
+    template: string,
+  ): Promise<IEmailResponse> {
     try {
-      const to: string[] = receivers.map((item) => item.email);
       const mailOptions = {
-        from: this.options.from,
         to,
         subject: 'Smartcore new organization registry',
-        cc: this.options.cc,
-        html: `<b>No Reply SmartCore </b><br> New organization data: ${JSON.stringify(
-          data,
-        )}<br />`,
-      };
+        template: `${process.cwd()}/templates/${template}`,
+        context,
+      } as ISendMailOptions;
       const result: SMTPTransport.SentMessageInfo =
-        await this.transporter.sendMail(mailOptions);
+        await this.mailerService.sendMail(mailOptions);
 
       if (result.messageId)
-        console.log(`email sent successfully to ${to.join(', ')}`);
+        return {
+          success: true,
+          message: `Email sent successfully to ${to.join(', ')}`,
+        };
     } catch (error) {
-      console.error(error);
+      throw new InternalServerErrorException(JSON.stringify(error));
     }
+  }
+
+  @OnEvent(To.ADMIN)
+  async handleEmailToAdmin(payload: AdminPayload) {
+    const toAdmin = [this.default_receiver];
+    return this.sendEmail(toAdmin, payload, EmailTemplate.REGISTER);
+  }
+
+  @OnEvent(To.CLIENT)
+  async handleEmailToClient(payload: ClientPayload) {
+    const toClient = [payload.email];
+    return this.sendEmail(toClient, payload, EmailTemplate.WELCOME);
   }
 }

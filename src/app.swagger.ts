@@ -15,8 +15,8 @@ export const initSwagger = (app: INestApplication) => {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-  SwaggerModule.setup('/api/docs', app, document, {
-    uiConfig: {
+  SwaggerModule.setup('/api/v1/docs', app, document, {
+    swaggerOptions: {
       deepLinking: true,
       displayOperationId: true,
       defaultModelRendering: 'model',
@@ -31,7 +31,6 @@ export const initSwagger = (app: INestApplication) => {
       },
       tryItOutEnabled: false,
     },
-    staticCSP: true,
   } as SwaggerCustomOptions);
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document, null, 2));
 };

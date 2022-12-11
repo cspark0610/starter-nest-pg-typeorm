@@ -34,10 +34,10 @@
         },
         "responses": {
           "201": {
-            "description": "Usuario creado correctamente y correo enviado"
+            "description": "Emails sent to {email} and devsmartcore@outlook.com and user tenant created successfully"
           },
           "409": {
-            "description": "Email del user o el subdomiino a registar ya existe"
+            "description": "Email del user o el subdominio a registar ya existe"
           }
         },
         "tags": [
@@ -48,10 +48,12 @@
     "/api/v1/users": {
       "get": {
         "operationId": "UsersController_findAll",
+        "summary": "",
+        "description": "Trae todos los usuarios tenant",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Users found successfully"
           }
         },
         "tags": [
@@ -62,11 +64,14 @@
     "/api/v1/users/{id}": {
       "get": {
         "operationId": "UsersController_findOne",
+        "summary": "",
+        "description": "Trae un usuario tenant pasando su id",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "Pasar el id del usuario tenant a buscar",
             "schema": {
               "type": "string"
             }
@@ -74,7 +79,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "User with id: {id} found successfully"
+          },
+          "409": {
+            "description": "User with id: {id} not found"
           }
         },
         "tags": [
@@ -83,6 +91,8 @@
       },
       "patch": {
         "operationId": "UsersController_update",
+        "summary": "",
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -114,11 +124,14 @@
       },
       "delete": {
         "operationId": "UsersController_remove",
+        "summary": "",
+        "description": "Elimina un usuario tenant y su organizacion pasando el id de usuario",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "Pasar el id del usuario tenant a eliminar",
             "schema": {
               "type": "string"
             }
@@ -126,7 +139,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "User with id: {id}, and organization with id: {id} removed successfully"
+          },
+          "409": {
+            "description": "User with id: {id} not found"
           }
         },
         "tags": [

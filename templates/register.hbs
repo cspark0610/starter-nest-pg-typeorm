@@ -29,9 +29,15 @@
                 </td>
               </tr>
             </table>
-            <p>Datos registrados:</p>
+            <p>Datos registrados para nueva instancia:</p>
             <p><strong>Celular:</strong> <br>{{phone}}</p>
             <p><strong>Correo:</strong> <br>{{email}}</p>
+            <p><strong>Organizacion:</strong></p>
+            <ul>
+              <li>subdomino: {{organization.subdomain}}</li>
+              <li>aws_s3_bucket: {{organization.aws_s3_bucket}}</li>
+            </ul>
+
             <table class="attributes" width="100%" cellpadding="0" cellspacing="0" role="presentation">
               <tr>
                 <td class="attributes_content">

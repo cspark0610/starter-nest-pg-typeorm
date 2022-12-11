@@ -9,7 +9,13 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import fastify = require('fastify');
 import { defaultUser } from '~/common/constants';
@@ -39,28 +45,63 @@ export class UsersController {
   })
   @ApiResponse({
     status: 201,
-    description: 'Usuario creado correctamente y correo enviado',
+    description:
+      'Emails sent to {email} and devsmartcore@outlook.com and user tenant created successfully',
   })
   @ApiResponse({
     status: 409,
-    description: 'Email del user o el subdomiino a registar ya existe',
+    description: 'Email del user o el subdominio a registar ya existe',
   })
   async create(@Body() userDto: UserDto, @Res() res: fastify.FastifyReply) {
-    const data = await this.usersService.create(userDto);
+    const { user, message } = await this.usersService.create(userDto);
     res.status(201).send({
-      message: 'User tenant has been successfully created and sent email',
+      message,
+      data: user,
+    });
+  }
+
+  @ApiOperation({
+    description: 'Trae todos los usuarios tenant',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users found successfully',
+  })
+  @Get()
+  async findAll(@Res() res: fastify.FastifyReply) {
+    const data = await this.usersService.findAll();
+
+    res.status(200).send({
+      message: `Users found successfully`,
       data,
     });
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
+  @ApiOperation({
+    description: 'Trae un usuario tenant pasando su id',
+  })
+  @ApiParam({
+    description: 'Pasar el id del usuario tenant a buscar',
+    type: String,
+    required: true,
+    name: 'id',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User with id: {id} found successfully',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User with id: {id} not found',
+  })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res() res: fastify.FastifyReply) {
+    const data = await this.usersService.findOne(Number(id));
+
+    res.status(200).send({
+      message: `User with id: ${id} found successfully`,
+      data,
+    });
   }
 
   @Patch(':id')
@@ -68,8 +109,31 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @ApiOperation({
+    description:
+      'Elimina un usuario tenant y su organizacion pasando el id de usuario',
+  })
+  @ApiParam({
+    description: 'Pasar el id del usuario tenant a eliminar',
+    type: String,
+    required: true,
+    name: 'id',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'User with id: {id}, and organization with id: {id} removed successfully',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User with id: {id} not found',
+  })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Param('id') id: string, @Res() res: fastify.FastifyReply) {
+    this.usersService.remove(Number(id));
+    res.status(200).send({
+      message: `User with id: ${id}, and organization with id: ${id} removed successfully`,
+      data: `${id}`,
+    });
   }
 }

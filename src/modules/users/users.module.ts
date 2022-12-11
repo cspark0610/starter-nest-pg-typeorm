@@ -1,32 +1,26 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { SERVICES } from '../emails/config';
+import { OrganizationRepository } from '../organization/organization.repository';
 import { UsersRepository } from './users.repository';
 
-import { EmailsModule } from '../emails/emails.module';
 import { OrganizationModule } from '../organization/organization.module';
 
 import { UsersController } from './users.controller';
 
 import { UsersService } from './users.service';
 
+import { Organization } from '../organization/entities/organization.entity';
 import { User } from './entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Organization]),
+    EventEmitterModule.forRoot(),
     OrganizationModule,
-    EmailsModule.register({
-      host: process.env.MAIL_HOST,
-      port: Number(process.env.MAIL_PORT),
-      from: process.env.MAIL_USER,
-      password: process.env.MAIL_PASSWORD,
-      service: process.env.MAIL_SERVICE as SERVICES,
-      cc: process.env.MAIL_CC,
-    }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository],
+  providers: [UsersService, UsersRepository, OrganizationRepository],
 })
 export class UsersModule {}
